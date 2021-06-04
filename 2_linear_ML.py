@@ -1,27 +1,53 @@
-        
-def make_df(test_num, df, xlist):
-    i = 18 + test_num
-    train_begin = 196507
-    train_end = 196601 + i*100 -1
-    val_begin = 196601 + i*100
-    val_end = 196601 + (i+12)*100 - 1
-    test_begin = 196601 + (i+12)*100
-    test_end = 196601 + (i+13)*100 - 1
-    # training set (196507-198312)
-    dfT = df[(df.ym>=train_begin) & (df.ym<=train_end)].copy()
-    dfT = dfT.sample(100000, random_state=1)
-    # validation set (198401-199512)
-    dfV = df[(df.ym>=val_begin) & (df.ym<=val_end)].copy()
-    # test set for prediction (199601 - 199612)
-    dfP = df[(df.ym>=test_begin) & (df.ym<=test_end)].copy()
-    index_test = dfP.index
-    Xtrain = dfT[xlist].astype('float32')
-    ytrain = dfT.excess_ret.astype('float32')
-    Xval = dfV[xlist].astype('float32')
-    yval = dfV.excess_ret.astype('float32')
-    Xtest = dfP[xlist].astype('float32')
-    ytest = dfP.excess_ret.astype('float32')
+
+
+def linear_ML(Xtrainval, ytrainval, Xtest, ytest, ps):
+    # OLS 
+    OLS = LinearRegression()
     gc.disable()
-    return Xtrain, ytrain, Xval, yval, Xtest, ytest, index_test
+    OLS.fit(Xtrainval, ytrainval)
+    gc.disable()
+    ytest_hat_OLS = OLS.predict(Xtest)
+    gc.disable()
+    
+    # OLS3 
+    
+    # PCR    
+    param_grid_PCR = {'pca__n_components':np.arange(1,min(Xtrainval.shape[1], 100))} 
+    gc.disable()
+    PCR  = Pipeline([('pca' , PCA()), ('lr' , LinearRegression())])
+    gc.disable()
+    grid_PCR = GridSearchCV(estimator=PCR, param_grid=param_grid_PCR, cv=ps, verbose=2, n_jobs = 10)
+    gc.disable()
+    grid_PCR.fit(Xtrainval, ytrainval)
+    gc.disable()
+    ytest_hat_PCR = grid_PCR.predict(Xtest)
+    gc.disable()
+    
+    # PLS 
+    param_grid_PLS = {'n_components':np.arange(1,min(Xtrainval.shape[1], 100))} 
+    gc.disable()
+    PLS = PLSRegression()
+    gc.disable()
+    grid_PLS = GridSearchCV(estimator=PLS, param_grid=param_grid_PLS, cv=ps, verbose=2, n_jobs = 10)
+    gc.disable()
+    grid_PLS.fit(Xtrainval, ytrainval)
+    gc.disable()
+    ytest_hat_PLS = grid_PLS.predict(Xtest)
+    gc.disable()
+    
+    # ENet
+    param_grid_ENet = {'alpha': np.linspace(start=0.01,stop=0.2,num=20),
+                      'l1_ratio' : np.array([.1, .5, .7, .9, .95, .99, 1])}
+    gc.disable()
+    ENet = ElasticNet()   # if max_iter is small, it may not converge
+    gc.disable()
+    grid_ENet = GridSearchCV(estimator=ENet, param_grid=param_grid_ENet, cv=ps, verbose=2, n_jobs = 10)
+    gc.disable()
+    grid_ENet.fit(Xtrainval, ytrainval)
+    gc.disable()
+    ytest_hat_ENet = grid_ENet.predict(Xtest)
+    gc.disable()
+    return ytest_hat_OLS, ytest_hat_PCR, ytest_hat_PLS, ytest_hat_ENet
+
 
 
