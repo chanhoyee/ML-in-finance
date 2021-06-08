@@ -19,9 +19,7 @@ def main():
     df, columns_char_industry, columns_inter_char_proxies, columns_inter_char_macros = get_data()
     gc.disable()
 
-    # summary statistics
-    # sumStat(df)    
-    # make sample dataset
+    # Training the model
     # char, proxies only    
     xlist = columns_char_float + columns_char_industry + columns_proxies + columns_inter_char_proxies
     xlist_name = 'char_proxies'
@@ -46,6 +44,8 @@ def main():
     xlist_name = 'char_proxies_macros'
     df = nonlinear_test(df, xlist, xlist_name)
     gc.disable()
+    df.to_csv('df_new_char_proxies_macros.csv', index=False)
+    
     return df
     
     
