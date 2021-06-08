@@ -12,11 +12,11 @@ def linear_ML(Xtrainval, ytrainval, Xtest, ytest, ps):
     # OLS3 
     
     # PCR    
-    param_grid_PCR = {'pca__n_components':np.arange(1,min(Xtrainval.shape[1], 100))} 
+    param_grid_PCR = {'pca__n_components':np.arange(1,min(Xtrainval.shape[1], 30))} 
     gc.disable()
     PCR  = Pipeline([('pca' , PCA()), ('lr' , LinearRegression())])
     gc.disable()
-    grid_PCR = GridSearchCV(estimator=PCR, param_grid=param_grid_PCR, cv=ps, verbose=2, n_jobs = 10)
+    grid_PCR = GridSearchCV(estimator=PCR, param_grid=param_grid_PCR, cv=ps, verbose=2)
     gc.disable()
     grid_PCR.fit(Xtrainval, ytrainval)
     gc.disable()
@@ -24,11 +24,11 @@ def linear_ML(Xtrainval, ytrainval, Xtest, ytest, ps):
     gc.disable()
     
     # PLS 
-    param_grid_PLS = {'n_components':np.arange(1,min(Xtrainval.shape[1], 100))} 
+    param_grid_PLS = {'n_components':np.arange(1,min(Xtrainval.shape[1], 30))} 
     gc.disable()
     PLS = PLSRegression()
     gc.disable()
-    grid_PLS = GridSearchCV(estimator=PLS, param_grid=param_grid_PLS, cv=ps, verbose=2, n_jobs = 10)
+    grid_PLS = GridSearchCV(estimator=PLS, param_grid=param_grid_PLS, cv=ps, verbose=2)
     gc.disable()
     grid_PLS.fit(Xtrainval, ytrainval)
     gc.disable()
@@ -37,11 +37,11 @@ def linear_ML(Xtrainval, ytrainval, Xtest, ytest, ps):
     
     # ENet
     param_grid_ENet = {'alpha': np.linspace(start=0.01,stop=0.2,num=20),
-                      'l1_ratio' : np.array([.1, .5, .7, .9, .95, .99, 1])}
+                      'l1_ratio' : 0.5}
     gc.disable()
     ENet = ElasticNet()   # if max_iter is small, it may not converge
     gc.disable()
-    grid_ENet = GridSearchCV(estimator=ENet, param_grid=param_grid_ENet, cv=ps, verbose=2, n_jobs = 10)
+    grid_ENet = GridSearchCV(estimator=ENet, param_grid=param_grid_ENet, cv=ps, verbose=2)
     gc.disable()
     grid_ENet.fit(Xtrainval, ytrainval)
     gc.disable()
