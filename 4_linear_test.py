@@ -4,7 +4,7 @@ def linear_test(df, xlist, xlist_name):
     df['ytest_hat_PCR' + '_' + xlist_name] = np.nan
     df['ytest_hat_PLS' + '_' + xlist_name] = np.nan
     df['ytest_hat_ENet' + '_' + xlist_name] = np.nan
-    for test_num in np.arange(0,20):
+    for test_num in np.arange(20):
         gc.disable()
         Xtrain, ytrain, Xval, yval, Xtest, ytest, index_test = make_df(test_num, df, xlist)
         scaler = StandardScaler()
