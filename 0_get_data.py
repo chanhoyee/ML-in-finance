@@ -32,11 +32,13 @@ import torch
 torch.manual_seed(42)            
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import TensorDataset, DataLoader
 from sklearn import metrics
 import gc
 
+
 def get_data():
-    stock = pd.read_csv('stock.csv')#.sample(n=1000000, random_state=1)
+    stock = pd.read_csv('stock.csv')
     gc.disable()
     print('getting stock data done')
     stock = stock.replace('-', np.nan)
@@ -71,7 +73,7 @@ def get_data():
     df['m'] = df['ym'].dt.month
     df['ym'] = df['y']*100 + df['m']
     begin_date = 196507
-    end_date = 201806 # 이후는 결측치가 많음 
+    end_date = 201600 # 이후는 결측치가 많음 
     gc.disable()
     # predictive variables
     # for shifting    df['ROE(-1)'] = df.sort_values(by=['cusip','year']).groupby('cusip')['ROE'].shift(1)    
