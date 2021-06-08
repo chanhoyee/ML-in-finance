@@ -9,7 +9,7 @@ def make_df(test_num, df, xlist):
     test_end = 196601 + (i+13)*100 - 1
     # training set (196507-198312)
     dfT = df[(df.ym>=train_begin) & (df.ym<=train_end)].copy()
-    dfT = dfT.sample(100000, random_state=1)
+    #dfT = dfT.sample(100000, random_state=1)
     # validation set (198401-199512)
     dfV = df[(df.ym>=val_begin) & (df.ym<=val_end)].copy()
     # test set for prediction (199601 - 199612)
@@ -21,7 +21,6 @@ def make_df(test_num, df, xlist):
     yval = dfV.excess_ret.astype('float32')
     Xtest = dfP[xlist].astype('float32')
     ytest = dfP.excess_ret.astype('float32')
-    gc.disable()
     return Xtrain, ytrain, Xval, yval, Xtest, ytest, index_test
 
 
